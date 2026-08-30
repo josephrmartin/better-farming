@@ -383,6 +383,18 @@ public class FarmingTeleportOverlay extends Overlay {
         }
     }
     
+    /**
+     * Skip the current step of the active custom run. No-op when not in a custom run.
+     * Delegates to {@link FarmingStepHandler#forceAdvanceCurrentStep()}; the next render
+     * will observe the flipped {@code *PatchDone} flags and route to the next patch or location.
+     */
+    public void skipCurrentStep() {
+        if (!customRunMode || farmingStepHandler == null) {
+            return;
+        }
+        farmingStepHandler.forceAdvanceCurrentStep();
+    }
+
     public void removeOverlay() {
         plugin.overlayManager.remove(farmingHelperOverlay);
         plugin.overlayManager.remove(this);

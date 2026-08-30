@@ -15,6 +15,11 @@ import java.awt.Graphics2D;
  * Used to show current farming step instructions and debug information.
  * Only renders when the overlay is active.
  * Extends OverlayPanel for Runelite-consistent styling.
+ *
+ * The "Skip step" affordance for issue #98 lives in the plugin sidebar (EasyFarmingPanel /
+ * OverviewPanel) rather than this in-game overlay, because RuneLite's PanelComponent children
+ * are restricted to {@code LayoutableRenderableEntity} and cannot host a raw {@code JButton}.
+ * Sidebar buttons are also easier to target with the mouse while playing.
  */
 public class EasyFarmingOverlayInfoBox extends OverlayPanel {
     private final Client client;
