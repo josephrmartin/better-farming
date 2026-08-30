@@ -12,6 +12,10 @@ import java.util.List;
 
 /**
  * Overview list: "Custom runs" section with saved custom runs and "+ New custom run" card.
+ *
+ * When a custom run is active, a "Skip step" button is rendered at the top so the user has
+ * an escape hatch when the plugin is stuck on a step (e.g. varbit state the plugin cannot
+ * classify, or the user intentionally skipped a patch). See issue #98.
  */
 public class OverviewPanel extends JPanel {
     private final EasyFarmingPlugin plugin;
@@ -38,6 +42,22 @@ public class OverviewPanel extends JPanel {
 
     public void rebuildList() {
         contentPanel.removeAll();
+
+        // Active-run controls: Skip step button (issue #98). Rendered above the run list
+        // when a custom run is active. Hidden otherwise to avoid clutter.
+        if (plugin.getFarmingTeleportOverlay() != null
+                && plugin.getFarmingTeleportOverlay().isCustomRunMode()) {
+            JButton skipButton = new JButton("Skip current step");
+            skipButton.setFocusable(false);
+            skipButton.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+            skipButton.setForeground(Color.WHITE);
+            skipButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+            skipButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, skipButton.getPreferredSize().height));
+            skipButton.setToolTipText("Force-advance past the current patch. Use when the plugin is stuck on a step.");
+            skipButton.addActionListener(e -> plugin.skipCurrentStep());
+            contentPanel.add(skipButton);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        }
 
         JPanel customTitlePanel = new JPanel(new BorderLayout());
         customTitlePanel.setBackground(ColorScheme.DARK_GRAY_COLOR);

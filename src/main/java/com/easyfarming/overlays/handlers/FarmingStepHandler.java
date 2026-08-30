@@ -1614,5 +1614,28 @@ public class FarmingStepHandler {
         fruitTreePatchComposted = false;
         hopsPatchComposted = false;
     }
+
+    /**
+     * Force-advances past the current step in a custom run by marking all patch types as done.
+     * The next call to {@link com.easyfarming.FarmingTeleportOverlay#render} will route to the
+     * next patch / location via the normal completion flow. Used by the "Skip step" button so a
+     * user can recover from a stuck step (e.g. varbit state the plugin can't classify, or a patch
+     * they intentionally chose not to do). Resets sticky compost flags and clears lastMessage so a
+     * skipped step's chat lines cannot leak into the next step's detection.
+     */
+    public void forceAdvanceCurrentStep() {
+        herbPatchDone = true;
+        flowerPatchDone = true;
+        allotmentPatchDone = true;
+        treePatchDone = true;
+        fruitTreePatchDone = true;
+        hopsPatchDone = true;
+        resetCompostStates();
+        allotmentPatchState.reset();
+        clearHintArrow();
+        // lastMessage is cleared through the plugin to keep state ownership in one place.
+        // Allocation-free: the call site (EasyFarmingPlugin.skipCurrentStep) gates on
+        // customRunMode so this only runs during a custom run.
+    }
 }
 
