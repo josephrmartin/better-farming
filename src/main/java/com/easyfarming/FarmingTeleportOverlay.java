@@ -385,14 +385,35 @@ public class FarmingTeleportOverlay extends Overlay {
     
     /**
      * Skip the current step of the active custom run. No-op when not in a custom run.
-     * Delegates to {@link FarmingStepHandler#forceAdvanceCurrentStep()}; the next render
-     * will observe the flipped {@code *PatchDone} flags and route to the next patch or location.
+     * <ul>
+     *   <li>During item gathering: complete the checklist (including stuck seed-box check)
+     *       and enable teleport / navigation.</li>
+     *   <li>During navigation: treat the player as arrived so farming instructions for the
+     *       current patch begin on the next render (does not mark the patch done).</li>
+     *   <li>During farming: mark only the active patch type done so the next render advances
+     *       via {@link #moveToNextPatchOrLocation()}.</li>
+     * </ul>
      */
     public void skipCurrentStep() {
         if (!customRunMode || farmingStepHandler == null) {
             return;
         }
-        farmingStepHandler.forceAdvanceCurrentStep();
+        if (!plugin.areItemsCollected()) {
+            plugin.completeItemGatheringPhase();
+            return;
+        }
+        if (!isAtDestination) {
+            Location location = getCurrentLocationForCustomRun();
+            isAtDestination = true;
+            startSubCases = true;
+            navigationHandler.isAtDestination = true;
+            if (location != null && location.getFarmLimps()) {
+                farmLimps = true;
+            }
+            farmingStepHandler.clearHintArrow();
+            return;
+        }
+        farmingStepHandler.forceAdvancePatchType(getCurrentPatchTypeForCustomRun());
     }
 
     public void removeOverlay() {
@@ -464,6 +485,12 @@ public class FarmingTeleportOverlay extends Overlay {
         farmLimps = false;
         navigationHandler.currentTeleportCase = 1;
         navigationHandler.isAtDestination = false;
+        if (run.isSkipItemGathering()) {
+            plugin.completeItemGatheringPhase();
+        } else {
+            plugin.setItemsCollected(false);
+            plugin.setTeleportOverlayActive(false);
+        }
     }
 
     @Override

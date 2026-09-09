@@ -66,11 +66,19 @@ public class EasyFarmingPanel extends PluginPanel {
         }
     }
 
+    /** Called when a custom run starts so Skip / Start controls refresh on overview and detail. */
+    public void onCustomRunStarted() {
+        refreshOverviewList();
+        if (currentDetailPanel instanceof CustomRunDetailPanel) {
+            ((CustomRunDetailPanel) currentDetailPanel).refreshActiveRunControls();
+        }
+    }
+
     /** Called when the active custom run ends (e.g. last location completed). Refreshes overview and detail Start button. */
     public void onCustomRunEnded() {
         refreshOverviewList();
         if (currentDetailPanel instanceof CustomRunDetailPanel) {
-            ((CustomRunDetailPanel) currentDetailPanel).refreshStartButtonState();
+            ((CustomRunDetailPanel) currentDetailPanel).refreshActiveRunControls();
         }
     }
 
@@ -95,6 +103,7 @@ public class EasyFarmingPanel extends PluginPanel {
                 overlayManager.add(overlay);
             }
             overlayManager.add(farmingTeleportOverlay);
+            onCustomRunStarted();
         });
     }
 }

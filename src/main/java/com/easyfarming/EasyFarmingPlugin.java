@@ -101,9 +101,9 @@ public class EasyFarmingPlugin extends Plugin
 	}
 
 	/**
-	 * Force-advance the current step of an active custom run. Called by the "Skip current step"
-	 * button in {@link com.easyfarming.ui.OverviewPanel}. No-op when no custom run is active.
-	 * Clears {@code lastMessage} so a chat line from a skipped patch cannot poison the next
+	 * Skip the current step of an active custom run (item checklist, navigation, or farming).
+	 * Called by the "Skip current step" button. No-op when no custom run is active.
+	 * Clears {@code lastMessage} so a chat line from a skipped step cannot poison the next
 	 * step's compost detection (see {@link com.easyfarming.overlays.utils.PatchStateChecker}).
 	 */
 	public void skipCurrentStep() {
@@ -111,8 +111,19 @@ public class EasyFarmingPlugin extends Plugin
 			return;
 		}
 		clearLastMessage();
-		// Lazy-resolve the step handler via the overlay's @Inject field.
 		farmingTeleportOverlay.skipCurrentStep();
+	}
+
+	/**
+	 * Marks the item-gathering phase complete and enables teleport/navigation overlays.
+	 * Used when the run has "Skip item checklist" enabled, or when the user skips that step.
+	 */
+	public void completeItemGatheringPhase() {
+		itemsCollected = true;
+		isTeleportOverlayActive = true;
+		if (farmingHelperOverlay != null) {
+			farmingHelperOverlay.clearAllInfoBoxes();
+		}
 	}
 
 	@Inject

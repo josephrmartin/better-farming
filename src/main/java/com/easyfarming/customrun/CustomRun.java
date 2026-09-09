@@ -14,6 +14,11 @@ public class CustomRun {
     private boolean includeSecateurs = true;
     private boolean includeDibber = true;
     private boolean includeRake = true;
+    /**
+     * When true, starting this run skips the "Grab all the items needed" checklist
+     * (and seed-box check) and goes straight to teleport / navigation.
+     */
+    private boolean skipItemGathering = false;
 
     public CustomRun() {
         this.locations = new ArrayList<>();
@@ -62,5 +67,13 @@ public class CustomRun {
 
     public void setIncludeRake(boolean includeRake) {
         this.includeRake = includeRake;
+    }
+
+    public boolean isSkipItemGathering() {
+        return skipItemGathering;
+    }
+
+    public void setSkipItemGathering(boolean skipItemGathering) {
+        this.skipItemGathering = skipItemGathering;
     }
 }

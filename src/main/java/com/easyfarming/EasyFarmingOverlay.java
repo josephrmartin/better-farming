@@ -1201,7 +1201,8 @@ public class EasyFarmingOverlay extends Overlay {
         return null;
     }
 
-    private void clearAllInfoBoxes() {
+    /** Clears missing-item InfoBoxes (e.g. after skipping or disabling the item checklist). */
+    public void clearAllInfoBoxes() {
         if (infoBoxManager != null) {
             for (RequiredItemInfoBox infoBox : currentInfoBoxes.values()) {
                 infoBoxManager.removeInfoBox(infoBox);

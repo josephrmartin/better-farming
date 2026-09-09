@@ -53,7 +53,7 @@ public class OverviewPanel extends JPanel {
             skipButton.setForeground(Color.WHITE);
             skipButton.setAlignmentX(Component.LEFT_ALIGNMENT);
             skipButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, skipButton.getPreferredSize().height));
-            skipButton.setToolTipText("Force-advance past the current patch. Use when the plugin is stuck on a step.");
+            skipButton.setToolTipText("Skip the current step: item checklist, travel, or farming.");
             skipButton.addActionListener(e -> plugin.skipCurrentStep());
             contentPanel.add(skipButton);
             contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));

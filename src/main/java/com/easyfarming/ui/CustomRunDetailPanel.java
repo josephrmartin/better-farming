@@ -43,6 +43,8 @@ public class CustomRunDetailPanel extends JPanel {
     private final JPanel locationsContainer = new JPanel();
     private final JTextField runNameField;
     private final StartStopJButton startButton;
+    private final JCheckBox skipItemGatheringCheck;
+    private final JButton skipStepButton;
     /** Ordered list of locations (saved order; see {@link #syncRunWithCatalog()}). */
     private final List<RunLocation> runLocationsInOrder = new ArrayList<>();
     private final Map<String, CustomRunLocationSubPanel> subPanelsByLocation = new LinkedHashMap<>();
@@ -109,6 +111,25 @@ public class CustomRunDetailPanel extends JPanel {
 
         JPanel headerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         headerButtons.setBackground(ColorScheme.DARK_GRAY_COLOR);
+
+        skipItemGatheringCheck = new JCheckBox("Skip item checklist");
+        skipItemGatheringCheck.setSelected(customRun.isSkipItemGathering());
+        skipItemGatheringCheck.setFocusable(false);
+        skipItemGatheringCheck.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        skipItemGatheringCheck.setForeground(Color.WHITE);
+        skipItemGatheringCheck.setToolTipText("When enabled, starting this run skips \"Grab all the items needed\" and goes straight to teleport guidance.");
+        skipItemGatheringCheck.addActionListener(e -> customRun.setSkipItemGathering(skipItemGatheringCheck.isSelected()));
+
+        skipStepButton = new JButton("Skip current step");
+        skipStepButton.setFocusable(false);
+        skipStepButton.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        skipStepButton.setForeground(Color.WHITE);
+        skipStepButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        skipStepButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, skipStepButton.getPreferredSize().height));
+        skipStepButton.setToolTipText("Skip the current step: item checklist, travel, or farming.");
+        skipStepButton.addActionListener(e -> plugin.skipCurrentStep());
+        skipStepButton.setVisible(false);
+
         startButton = new StartStopJButton(customRun.getName());
         startButton.setPreferredSize(new Dimension(80, 25));
         startButton.addActionListener(e -> {
@@ -119,15 +140,18 @@ public class CustomRunDetailPanel extends JPanel {
                 customRun.setIncludeSecateurs(filterBar.isSecateursIncluded());
                 customRun.setIncludeDibber(filterBar.isDibberIncluded());
                 customRun.setIncludeRake(filterBar.isRakeIncluded());
+                customRun.setSkipItemGathering(skipItemGatheringCheck.isSelected());
                 parentPanel.startCustomRun(customRun);
             } else {
                 plugin.getFarmingTeleportOverlay().removeOverlay();
                 plugin.setOverlayActive(false);
+                refreshActiveRunControls();
             }
         });
         syncStartButtonState(startButton);
         headerButtons.add(startButton);
         headerPanel.add(headerButtons, BorderLayout.EAST);
+
         JLabel filterHint = new JLabel("Tools: grey = not included, green = included. Patch: yellow = filter, green = enable at all.");
         filterHint.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
         filterHint.setFont(filterHint.getFont().deriveFont(10f));
@@ -152,6 +176,7 @@ public class CustomRunDetailPanel extends JPanel {
         JPanel filterOptionsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
         filterOptionsRow.setBackground(ColorScheme.DARK_GRAY_COLOR);
         filterOptionsRow.add(hideEmptyToggle);
+        filterOptionsRow.add(skipItemGatheringCheck);
         filterOptionsRow.add(filterHint);
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
@@ -159,6 +184,8 @@ public class CustomRunDetailPanel extends JPanel {
         northPanel.add(headerPanel);
         northPanel.add(filterBar);
         northPanel.add(filterOptionsRow);
+        northPanel.add(Box.createRigidArea(new Dimension(0, 6)));
+        northPanel.add(skipStepButton);
         add(northPanel, BorderLayout.NORTH);
 
         locationsContainer.setLayout(new BoxLayout(locationsContainer, BoxLayout.Y_AXIS));
@@ -176,6 +203,7 @@ public class CustomRunDetailPanel extends JPanel {
         filterBar.setDibberIncluded(customRun.isIncludeDibber());
         filterBar.setRakeIncluded(customRun.isIncludeRake());
         refreshLocationVisibility();
+        refreshActiveRunControls();
     }
 
     /** Update filter bar from run data: green if all enabled, yellow if some enabled, neutral if none. */
@@ -412,7 +440,18 @@ public class CustomRunDetailPanel extends JPanel {
 
     /** Called when a run ends (e.g. from overlay) so the Start button returns to Start state. */
     public void refreshStartButtonState() {
+        refreshActiveRunControls();
+    }
+
+    /** Sync Start/Stop and Skip visibility with whether this run is the active custom run. */
+    public void refreshActiveRunControls() {
         syncStartButtonState(startButton);
+        boolean active = plugin.getFarmingTeleportOverlay().isCustomRunMode()
+                && customRun.getName() != null
+                && customRun.getName().equals(plugin.getFarmingTeleportOverlay().getActiveCustomRunName());
+        skipStepButton.setVisible(active);
+        revalidate();
+        repaint();
     }
 
     /** Saves the config state as it exists on button press: name, tool requirements, and all locations from UI. */
@@ -428,6 +467,7 @@ public class CustomRunDetailPanel extends JPanel {
         customRun.setIncludeSecateurs(filterBar.isSecateursIncluded());
         customRun.setIncludeDibber(filterBar.isDibberIncluded());
         customRun.setIncludeRake(filterBar.isRakeIncluded());
+        customRun.setSkipItemGathering(skipItemGatheringCheck.isSelected());
         // 3. Commit location order and ensure customRun.getLocations() matches current UI
         customRun.getLocations().clear();
         customRun.getLocations().addAll(runLocationsInOrder);

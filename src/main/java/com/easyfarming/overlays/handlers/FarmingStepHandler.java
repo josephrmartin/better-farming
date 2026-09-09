@@ -2,6 +2,7 @@ package com.easyfarming.overlays.handlers;
 
 import com.easyfarming.*;
 import com.easyfarming.core.Teleport;
+import com.easyfarming.customrun.PatchTypes;
 import com.easyfarming.overlays.highlighting.*;
 import com.easyfarming.overlays.utils.ColorProvider;
 import com.easyfarming.overlays.utils.PatchStateChecker;
@@ -1616,26 +1617,45 @@ public class FarmingStepHandler {
     }
 
     /**
-     * Force-advances past the current step in a custom run by marking all patch types as done.
-     * The next call to {@link com.easyfarming.FarmingTeleportOverlay#render} will route to the
-     * next patch / location via the normal completion flow. Used by the "Skip step" button so a
-     * user can recover from a stuck step (e.g. varbit state the plugin can't classify, or a patch
-     * they intentionally chose not to do). Resets sticky compost flags and clears lastMessage so a
-     * skipped step's chat lines cannot leak into the next step's detection.
+     * Force-advances past the active patch type in a custom run by marking only that type done.
+     * The next {@link com.easyfarming.FarmingTeleportOverlay#render} routes to the next patch /
+     * location via the normal completion flow. Used by "Skip current step" while already at the
+     * destination. Navigation skips are handled in the overlay (force-arrive) so they do not
+     * consume the current patch. Resets sticky compost / allotment state and clears the hint arrow.
+     * {@code lastMessage} is cleared by {@link EasyFarmingPlugin#skipCurrentStep()}.
+     *
+     * @param patchType current custom-run patch type key ({@link com.easyfarming.customrun.PatchTypes}), or null
      */
-    public void forceAdvanceCurrentStep() {
-        herbPatchDone = true;
-        flowerPatchDone = true;
-        allotmentPatchDone = true;
-        treePatchDone = true;
-        fruitTreePatchDone = true;
-        hopsPatchDone = true;
+    public void forceAdvancePatchType(String patchType) {
+        if (patchType == null) {
+            clearHintArrow();
+            return;
+        }
+        switch (patchType) {
+            case PatchTypes.HERB:
+                herbPatchDone = true;
+                break;
+            case PatchTypes.FLOWER:
+                flowerPatchDone = true;
+                break;
+            case PatchTypes.ALLOTMENT:
+                allotmentPatchDone = true;
+                allotmentPatchState.reset();
+                break;
+            case PatchTypes.TREE:
+                treePatchDone = true;
+                break;
+            case PatchTypes.FRUIT_TREE:
+                fruitTreePatchDone = true;
+                break;
+            case PatchTypes.HOPS:
+                hopsPatchDone = true;
+                break;
+            default:
+                break;
+        }
         resetCompostStates();
-        allotmentPatchState.reset();
         clearHintArrow();
-        // lastMessage is cleared through the plugin to keep state ownership in one place.
-        // Allocation-free: the call site (EasyFarmingPlugin.skipCurrentStep) gates on
-        // customRunMode so this only runs during a custom run.
     }
 }
 
