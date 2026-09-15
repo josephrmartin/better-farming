@@ -28,7 +28,7 @@ dependencies {
 	testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
 }
 
-group = 'com.betterfarming'
+group = 'com.easyfarming'
 version = '1.0-SNAPSHOT'
 
 java {
