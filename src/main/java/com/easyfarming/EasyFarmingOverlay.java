@@ -178,8 +178,8 @@ public class EasyFarmingOverlay extends Overlay {
             ItemID.TOADFLAX_SEED,
             ItemID.TORSTOL_SEED
         );
-    private static final int BASE_SEED_ID = ItemID.TOADFLAX_SEED;
-    private static final int BASE_HOPS_SEED_ID = ItemID.HEMP_SEED;
+    private static final int BASE_SEED_ID = ItemID.GUAM_SEED;
+    private static final int BASE_HOPS_SEED_ID = ItemID.BARLEY_SEED;
 
     public List<Integer> getHerbSeedIds() {
         return HERB_SEED_IDS;
@@ -282,7 +282,7 @@ public class EasyFarmingOverlay extends Overlay {
         ItemID.WATERMELON_SEED
     );
            
-    private static final int BASE_ALLOTMENT_SEED_ID = ItemID.STRAWBERRY_SEED;
+    private static final int BASE_ALLOTMENT_SEED_ID = Constants.BASE_ALLOTMENT_SEED_ID;
 
     public List<Integer> getAllotmentSeedIds() {
         return Constants.ALLOTMENT_SEED_IDS;
@@ -303,7 +303,7 @@ public class EasyFarmingOverlay extends Overlay {
         ItemID.PLANTPOT_WILLOW_SAPLING,
         ItemID.PLANTPOT_YEW_SAPLING
     );
-    private static final int BASE_SAPLING_ID = ItemID.PLANTPOT_MAPLE_SAPLING;
+    private static final int BASE_SAPLING_ID = Constants.BASE_TREE_SAPLING_ID;
 
     public List<Integer> getTreeSaplingIds() {
         return TREE_SAPLING_IDS;
@@ -327,7 +327,7 @@ public class EasyFarmingOverlay extends Overlay {
         ItemID.PLANTPOT_PAPAYA_SAPLING,
         ItemID.PLANTPOT_PINEAPPLE_SAPLING
     );
-    private static final int BASE_FRUIT_SAPLING_ID = ItemID.PLANTPOT_PALM_SAPLING;
+    private static final int BASE_FRUIT_SAPLING_ID = Constants.BASE_FRUIT_TREE_SAPLING_ID;
 
     public List<Integer> getFruitTreeSaplingIds() {
         return FRUIT_TREE_SAPLING_IDS;
