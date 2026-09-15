@@ -126,10 +126,14 @@ public final class CustomRunItemRequirements {
         if (fruitTreePatchCount > 0) {
             allRequirements.merge(Constants.BASE_FRUIT_TREE_SAPLING_ID, fruitTreePatchCount, Integer::sum);
         }
-        if (hopsPatchCount > 0) {
+                if (hopsPatchCount > 0) {
             // All hops-patch crops use 3 or 4 seeds in-game; we use 4 everywhere to err on the side of caution.
             int seedsPerHopsPatch = 4;
             allRequirements.merge(ItemID.BARLEY_SEED, hopsPatchCount * seedsPerHopsPatch, Integer::sum);
+            if (config.hopsIncludeWateringCan()) {
+                // Keyed on the base watering-can id; the overlay treats any filled variant (or gricoller's) as satisfying it.
+                allRequirements.merge(Constants.WATERING_CAN_IDS.get(0), 1, Integer::sum);
+            }
         }
 
         // Tree/fruit tree runs instruct paying farmer to chop down after check-health (200gp per patch)

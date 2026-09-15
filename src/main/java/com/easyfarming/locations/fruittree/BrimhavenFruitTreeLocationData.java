@@ -50,7 +50,7 @@ public class BrimhavenFruitTreeLocationData {
         
         // Ardougne teleport (spellbook)
         location.addTeleportOption(new Teleport(
-            "Ardougne_teleport",
+            "Ardougne_Teleport",
             Teleport.Category.SPELLBOOK,
             "Teleport to Ardougne with Spellbook and take the boat to Brimhaven.",
             0,

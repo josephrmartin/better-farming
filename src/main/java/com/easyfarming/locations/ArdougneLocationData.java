@@ -59,7 +59,7 @@ public class ArdougneLocationData {
         
         // Ardougne teleport (spellbook)
         location.addTeleportOption(new Teleport(
-            "Ardougne_teleport",
+            "Ardougne_Teleport",
             Teleport.Category.SPELLBOOK,
             "Teleport to Ardougne with standard spellbook, and run north.",
             0,
@@ -78,7 +78,7 @@ public class ArdougneLocationData {
         location.addTeleportOption(new Teleport(
             "Ardougne_Tele_Tab",
             Teleport.Category.ITEM,
-            "Teleport to Ardougne with Ardougne tele tab, and run north.",
+            "Teleport to Ardougne with Ardougne teleport tab, and run north.",
             ItemID.POH_TABLET_ARDOUGNETELEPORT,
             "",
             0,
@@ -92,9 +92,9 @@ public class ArdougneLocationData {
         
         // Ardy cloak
         location.addTeleportOption(new Teleport(
-            "Ardy_cloak",
+            "Ardy_Cloak",
             Teleport.Category.ITEM,
-            "Teleport to Ardougne Farm with Ardougne cloak.",
+            "Teleport to Ardougne Farm with Ardougne cloak, and run north.",
             ItemID.ARDY_CAPE_MEDIUM,
             "Farm Teleport",
             0,
@@ -110,7 +110,7 @@ public class ArdougneLocationData {
         location.addTeleportOption(new Teleport(
             "Skills_Necklace",
             Teleport.Category.ITEM,
-            "Teleport to Fishing guild with Skills necklace, and run east.",
+            "Teleport to Fishing Guild with Skills Necklace, and run east.",
             ItemID.JEWL_NECKLACE_OF_SKILLS_1,
             "",
             0,
@@ -121,12 +121,26 @@ public class ArdougneLocationData {
                 new ItemRequirement(ItemID.JEWL_NECKLACE_OF_SKILLS_1, 1)
             )
         ));
+
+        // Jewellery box (Fishing Guild)
+		location.addTeleportOption(new Teleport(
+			"Jewellery_Box_Fishing_Guild",
+			Teleport.Category.JEWELLERY_BOX,
+			"Teleport to Fishing Guild with Jewellery box, and run east.",
+			29155,
+			"",
+			0,
+			0,
+			10292,
+			ARDOUGNE_HERB_PATCH_POINT,
+			houseTeleportSupplier.get()
+		));
         
         // Fishing Skillcape
         location.addTeleportOption(new Teleport(
             "Fishing_Skillcape",
             Teleport.Category.ITEM,
-            "Teleport to Fishing Guild with Fishing skillcape, and run east to the Ardougne herb patch.",
+            "Teleport to Fishing Guild with Fishing skillcape, and run east.",
             ItemID.SKILLCAPE_FISHING,
             "",
             0,

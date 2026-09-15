@@ -5,6 +5,8 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.client.config.Alpha;
 
 @ConfigGroup("farminghelper")
 public interface EasyFarmingConfig extends Config
@@ -69,6 +71,15 @@ public interface EasyFarmingConfig extends Config
 	)
 	default int highlightAlpha() {return 128;}
 
+	@ConfigItem(
+		keyName = "hopsIncludeWateringCan",
+		name = "Watering can (hops)",
+		description = "Require a watering can when a run includes hops patches",
+		position = 10,
+		section = generalList
+	)
+	default boolean hopsIncludeWateringCan() { return true; }
+
 	enum OptionEnumCompost
 	{
 		Compost,
@@ -105,11 +116,12 @@ public interface EasyFarmingConfig extends Config
 	enum OptionEnumArdougneTeleport implements OptionEnumTeleport
 	{
 		Portal_Nexus,
-		Ardougne_teleport,
+		Ardougne_Teleport,
 		Ardougne_tele_tab,
-		Ardy_cloak,
+		Ardy_Cloak,
 		Skills_Necklace,
 		Fishing_Skillcape,
+		Jewellery_Box_Fishing_Guild,
 		None
 	}
 	@ConfigItem(
@@ -119,7 +131,7 @@ public interface EasyFarmingConfig extends Config
 			description = "Desired way to teleport to Ardougne",
 			section = teleportOptionList
 	)
-	default OptionEnumArdougneTeleport enumOptionEnumArdougneTeleport() { return OptionEnumArdougneTeleport.Ardy_cloak; }
+	default OptionEnumArdougneTeleport enumOptionEnumArdougneTeleport() { return OptionEnumArdougneTeleport.Ardy_Cloak; }
 	enum OptionEnumCatherbyTeleport implements OptionEnumTeleport
 	{
 		Portal_Nexus_Catherby,
@@ -406,7 +418,7 @@ public interface EasyFarmingConfig extends Config
 	enum FruitTreeOptionEnumBrimhavenTeleport implements OptionEnumTeleport
 	{
 		Portal_Nexus,
-		Ardougne_teleport,
+		Ardougne_Teleport,
 		Ardougne_Tele_Tab,
 		POH_Tele_Tab,
 		Brimhaven_POH_Tabet,
@@ -420,7 +432,7 @@ public interface EasyFarmingConfig extends Config
 			description = "Desired way to teleport to Brimhaven",
 			section = fruitTreeTeleportOptionList
 	)
-	default FruitTreeOptionEnumBrimhavenTeleport enumFruitTreeBrimhavenTeleport() { return FruitTreeOptionEnumBrimhavenTeleport.Ardougne_teleport; }
+	default FruitTreeOptionEnumBrimhavenTeleport enumFruitTreeBrimhavenTeleport() { return FruitTreeOptionEnumBrimhavenTeleport.Ardougne_Teleport; }
 
 	enum FruitTreeOptionEnumCatherbyTeleport implements OptionEnumTeleport
 	{
@@ -616,4 +628,115 @@ public interface EasyFarmingConfig extends Config
 			section = hopsTeleportOptionList
 	)
 	default HopsOptionEnumAldarinTeleport enumHopsAldarinTeleport() { return HopsOptionEnumAldarinTeleport.Portal_Nexus; }
+
+	@ConfigSection(
+		name = "Seed highlighting",
+		description = "Highlight the specific seeds you use, in your bank and inventory",
+		position = 100
+	)
+	String seedHighlightList = "seedHighlightList";
+
+	@ConfigItem(
+		keyName = "highlightSeedsInBank",
+		name = "Highlight my seeds",
+		description = "Highlight your chosen seeds in the bank and inventory so they're easy to withdraw",
+		position = 0,
+		section = seedHighlightList
+	)
+	default boolean highlightSeedsInBank() { return true; }
+
+	@Alpha
+	@ConfigItem(
+		keyName = "seedHighlightColor",
+		name = "Seed highlight colour",
+		description = "Colour used to highlight your chosen seeds",
+		position = 1,
+		section = seedHighlightList
+	)
+	default Color seedHighlightColor() { return new Color(255, 235, 59, 160); }
+
+	enum HerbSeedOption {
+		None("None", -1),
+		Avantoe("Avantoe", ItemID.AVANTOE_SEED),
+		Cadantine("Cadantine", ItemID.CADANTINE_SEED),
+		Dwarf_weed("Dwarf weed", ItemID.DWARF_WEED_SEED),
+		Guam("Guam", ItemID.GUAM_SEED),
+		Harralander("Harralander", ItemID.HARRALANDER_SEED),
+		Huasca("Huasca", ItemID.HUASCA_SEED),
+		Irit("Irit", ItemID.IRIT_SEED),
+		Kwuarm("Kwuarm", ItemID.KWUARM_SEED),
+		Lantadyme("Lantadyme", ItemID.LANTADYME_SEED),
+		Marrentill("Marrentill", ItemID.MARRENTILL_SEED),
+		Ranarr("Ranarr", ItemID.RANARR_SEED),
+		Snapdragon("Snapdragon", ItemID.SNAPDRAGON_SEED),
+		Tarromin("Tarromin", ItemID.TARROMIN_SEED),
+		Toadflax("Toadflax", ItemID.TOADFLAX_SEED),
+		Torstol("Torstol", ItemID.TORSTOL_SEED);
+		private final String label; private final int itemId;
+		HerbSeedOption(String label, int itemId) { this.label = label; this.itemId = itemId; }
+		public int getItemId() { return itemId; }
+		@Override public String toString() { return label; }
+	}
+
+	@ConfigItem(keyName = "herbSeedChoice", name = "Herb seed",
+		description = "Which herb seed to highlight", position = 2, section = seedHighlightList)
+	default HerbSeedOption herbSeed() { return HerbSeedOption.None; }
+
+	enum AllotmentSeedOption {
+		None("None", -1),
+		Cabbage("Cabbage", ItemID.CABBAGE_SEED),
+		Onion("Onion", ItemID.ONION_SEED),
+		Potato("Potato", ItemID.POTATO_SEED),
+		Snape_grass("Snape grass", ItemID.SNAPE_GRASS_SEED),
+		Strawberry("Strawberry", ItemID.STRAWBERRY_SEED),
+		Sweetcorn("Sweetcorn", ItemID.SWEETCORN_SEED),
+		Tomato("Tomato", ItemID.TOMATO_SEED),
+		Watermelon("Watermelon", ItemID.WATERMELON_SEED);
+		private final String label; private final int itemId;
+		AllotmentSeedOption(String label, int itemId) { this.label = label; this.itemId = itemId; }
+		public int getItemId() { return itemId; }
+		@Override public String toString() { return label; }
+	}
+
+	@ConfigItem(keyName = "allotmentSeedChoice", name = "Allotment seed",
+		description = "Which allotment seed to highlight", position = 3, section = seedHighlightList)
+	default AllotmentSeedOption allotmentSeed() { return AllotmentSeedOption.None; }
+
+	enum FlowerSeedOption {
+		None("None", -1),
+		Limpwurt("Limpwurt", ItemID.LIMPWURT_SEED),
+		Marigold("Marigold", ItemID.MARIGOLD_SEED),
+		Nasturtium("Nasturtium", ItemID.NASTURTIUM_SEED),
+		Rosemary("Rosemary", ItemID.ROSEMARY_SEED),
+		White_lily("White lily", ItemID.WHITE_LILY_SEED),
+		Woad("Woad", ItemID.WOAD_SEED);
+		private final String label; private final int itemId;
+		FlowerSeedOption(String label, int itemId) { this.label = label; this.itemId = itemId; }
+		public int getItemId() { return itemId; }
+		@Override public String toString() { return label; }
+	}
+
+	@ConfigItem(keyName = "flowerSeedChoice", name = "Flower seed",
+		description = "Which flower seed to highlight", position = 4, section = seedHighlightList)
+	default FlowerSeedOption flowerSeed() { return FlowerSeedOption.None; }
+
+	enum HopsSeedOption {
+		None("None", -1),
+		Asgarnian("Asgarnian", ItemID.ASGARNIAN_HOP_SEED),
+		Barley("Barley", ItemID.BARLEY_SEED),
+		Hammerstone("Hammerstone", ItemID.HAMMERSTONE_HOP_SEED),
+		Hemp("Hemp", ItemID.HEMP_SEED),
+		Jute("Jute", ItemID.JUTE_SEED),
+		Krandorian("Krandorian", ItemID.KRANDORIAN_HOP_SEED),
+		Wildblood("Wildblood", ItemID.WILDBLOOD_HOP_SEED),
+		Yanillian("Yanillian", ItemID.YANILLIAN_HOP_SEED);
+		private final String label; private final int itemId;
+		HopsSeedOption(String label, int itemId) { this.label = label; this.itemId = itemId; }
+		public int getItemId() { return itemId; }
+		@Override public String toString() { return label; }
+	}
+
+	@ConfigItem(keyName = "hopsSeedChoice", name = "Hops seed",
+		description = "Which hops seed to highlight", position = 5, section = seedHighlightList)
+	default HopsSeedOption hopsSeed() { return HopsSeedOption.None; }
 }

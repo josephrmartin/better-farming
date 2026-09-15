@@ -47,7 +47,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Portal_Nexus",
             Teleport.Category.PORTAL_NEXUS,
-            "Teleport to Falador with Portal Nexus, and run south-east.",
+            "Teleport to Falador with Portal Nexus, and run southeast.",
             0,
             "",
             17,
@@ -77,7 +77,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Falador_Teleport",
             Teleport.Category.SPELLBOOK,
-            "Teleport to Falador with standard spellbook, and run south-east.",
+            "Teleport to Falador with standard spellbook, and run southeast.",
             0,
             "",
             Constants.INTERFACE_MAGIC_SPELLBOOK,
@@ -95,7 +95,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Falador_Tele_Tab",
             Teleport.Category.ITEM,
-            "Teleport to Falador with Falador Tele Tab, and run south-east.",
+            "Teleport to Falador with Falador Tele Tab, and run southeast.",
             ItemID.POH_TABLET_FALADORTELEPORT,
             "",
             0,
@@ -111,7 +111,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Draynor_Tele_Tab",
             Teleport.Category.ITEM,
-            "Teleport to Draynor Manor with Draynor Manor Tele Tab, and run south-west.",
+            "Teleport to Draynor Manor with Draynor Manor Tele Tab, and run southwest.",
             ItemID.TELETAB_DRAYNOR,
             "",
             0,
@@ -127,7 +127,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Amulet_of_Glory",
             Teleport.Category.ITEM,
-            "Teleport to Draynor Village with Amulet of Glory, and run west to the patch.",
+            "Teleport to Draynor Village with Amulet of Glory, and run northwest.",
             ItemID.AMULET_OF_GLORY_1,
             "",
             0,
@@ -143,7 +143,7 @@ public class FaladorLocationData {
         location.addTeleportOption(new Teleport(
             "Spirit_Tree_Port_Sarim",
             Teleport.Category.SPIRIT_TREE,
-            "Use a Spirit Tree and teleport to Port Sarim, then run to the Falador herb patch.",
+            "Use a Spirit Tree and teleport to Port Sarim, and run north.",
             0,
             "",
             187,

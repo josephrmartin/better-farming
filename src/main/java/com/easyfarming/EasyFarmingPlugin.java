@@ -1,260 +1,443 @@
 package com.easyfarming;
 
+import com.easyfarming.customrun.CustomRun;
 import com.easyfarming.customrun.CustomRunStorage;
 import com.easyfarming.customrun.LocationCatalog;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
+
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.*;
+
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.util.ImageUtil;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.eventbus.EventBus;
+import net.runelite.client.util.ImageUtil;
+
+import com.easyfarming.customrun.RunLocation;
+
 
 @PluginDescriptor(
-		name = "Easy Farming",
-		description = "Show item requirements and highlights for farming runs."
+        name = "Better Farming",
+        description = "Show item requirements and highlights for farming runs."
 )
-
 public class EasyFarmingPlugin extends Plugin
 {
-	@Inject
-	private ItemManager itemManager;
-	@Inject
-	private ConfigManager configManager;
-	@Inject
-	private Gson gson;
-	@Getter
     @Inject
-	private Client client;
+    private ItemManager itemManager;
 
-	private LocationCatalog locationCatalog;
-	private CustomRunStorage customRunStorage;
+    @Inject
+    private ConfigManager configManager;
 
-	public LocationCatalog getLocationCatalog() {
-		if (locationCatalog == null) {
-			locationCatalog = new LocationCatalog(this);
-		}
-		return locationCatalog;
-	}
+    @Inject
+    private Gson gson;
 
-	public CustomRunStorage getCustomRunStorage() {
-		if (customRunStorage == null) {
-			customRunStorage = new CustomRunStorage(configManager, gson);
-		}
-		return customRunStorage;
-	}
+    @Getter
+    @Inject
+    private Client client;
 
-	public void runOnClientThread(Runnable task) {
-		clientThread.invokeLater(task);
-	}
+    @Inject
+    private EventBus eventBus;
 
-	@Getter
+    @Inject
+    private ClientThread clientThread;
+
+    @Inject
+    private ClientToolbar clientToolbar;
+
+    @Inject
+    private EasyFarmingConfig config;
+
+    @Inject
+    public OverlayManager overlayManager;
+
+    @Inject
+    public InfoBoxManager infoBoxManager;
+
+    @Getter
+    @Inject
+    private FarmingTeleportOverlay farmingTeleportOverlay;
+
+    @Inject
+    private FarmingTeleportSceneOverlay farmingTeleportSceneOverlay;
+
+    @Inject
+    private EasyFarmingOverlayInfoBox farmingHelperOverlayInfoBox;
+
+    @Inject
+    private EasyFarmingOverlay farmingHelperOverlay;
+
+    @Inject
+    private com.easyfarming.overlays.highlighting.SeedHighlightOverlay seedHighlightOverlay;
+
+
+    private LocationCatalog locationCatalog;
+    private CustomRunStorage customRunStorage;
+
+    private EasyFarmingPanel farmingHelperPanel;
+
+    public EasyFarmingPanel panel;
+
+    private NavigationButton navButton;
+
+
+    /*
+     * The custom run currently selected in the Better Farming sidebar.
+     *
+     * This is deliberately separate from whether a run has actually
+     * started. Seed highlighting is based on the selected run.
+     */
+    @Getter
+    @Setter
+    private CustomRun selectedCustomRun;
+
+
+    @Getter
     @Setter
     private boolean isTeleportOverlayActive = false;
 
-    @Inject
-	private EasyFarmingOverlayInfoBox farmingHelperOverlayInfoBox;
-	public EasyFarmingOverlayInfoBox getEasyFarmingOverlayInfoBox()
-	{
-		return farmingHelperOverlayInfoBox;
-	}
+    @Getter
+    @Setter
+    private boolean isOverlayActive = true;
 
-	@Getter
+    @Setter
+    private boolean itemsCollected = false;
+
+
+    private boolean customRunIncludeSecateurs = true;
+    private boolean customRunIncludeDibber = true;
+    private boolean customRunIncludeRake = true;
+
+
+    @Getter
     private String lastMessage = "";
+
+
+    public LocationCatalog getLocationCatalog()
+    {
+        if (locationCatalog == null)
+        {
+            locationCatalog = new LocationCatalog(this);
+        }
+
+        return locationCatalog;
+    }
+
+
+    public CustomRunStorage getCustomRunStorage()
+    {
+        if (customRunStorage == null)
+        {
+            customRunStorage = new CustomRunStorage(configManager, gson);
+        }
+
+        return customRunStorage;
+    }
+
+
+    public void runOnClientThread(Runnable task)
+    {
+        clientThread.invokeLater(task);
+    }
+
+
+    public EasyFarmingConfig getConfig()
+    {
+        return config;
+    }
+
+
+    public EasyFarmingOverlayInfoBox getEasyFarmingOverlayInfoBox()
+    {
+        return farmingHelperOverlayInfoBox;
+    }
+
+
+    public EasyFarmingOverlay getEasyFarmingOverlay()
+    {
+        return farmingHelperOverlay;
+    }
+
+
     @Subscribe
-    public void onChatMessage(ChatMessage event) {
+    public void onChatMessage(ChatMessage event)
+    {
         String message = event.getMessage();
-        
-        // Store last message for other purposes (compost detection, etc.)
-        if (event.getType() == ChatMessageType.GAMEMESSAGE) {
+
+        if (event.getType() == ChatMessageType.GAMEMESSAGE)
+        {
             lastMessage = message;
         }
-        else if (event.getType() == ChatMessageType.SPAM) {
+        else if (event.getType() == ChatMessageType.SPAM)
+        {
             lastMessage = message;
         }
     }
 
-    public boolean checkMessage(String targetMessage, String lastMessage) {
-		return lastMessage.trim().equalsIgnoreCase(targetMessage.trim());
-	}
 
-	/**
-	 * Clears the last game message used for compost/protection detection. Call when advancing to the
-	 * next patch at the same location so a compost line from the previous patch is not applied to the next.
-	 */
-	public void clearLastMessage() {
-		lastMessage = "";
-	}
-
-	/**
-	 * Skip the current step of an active custom run (item checklist, navigation, or farming).
-	 * Called by the "Skip current step" button. No-op when no custom run is active.
-	 * Clears {@code lastMessage} so a chat line from a skipped step cannot poison the next
-	 * step's compost detection (see {@link com.easyfarming.overlays.utils.PatchStateChecker}).
-	 */
-	public void skipCurrentStep() {
-		if (farmingTeleportOverlay == null || !farmingTeleportOverlay.isCustomRunMode()) {
-			return;
-		}
-		clearLastMessage();
-		farmingTeleportOverlay.skipCurrentStep();
-	}
-
-	/**
-	 * Marks the item-gathering phase complete and enables teleport/navigation overlays.
-	 * Used when the run has "Skip item checklist" enabled, or when the user skips that step.
-	 */
-	public void completeItemGatheringPhase() {
-		itemsCollected = true;
-		isTeleportOverlayActive = true;
-		if (farmingHelperOverlay != null) {
-			farmingHelperOverlay.clearAllInfoBoxes();
-		}
-	}
-
-	@Inject
-	private EventBus eventBus;
-
-	@Inject
-	private ClientThread clientThread;
+    public boolean checkMessage(String targetMessage, String lastMessage)
+    {
+        return lastMessage.trim().equalsIgnoreCase(targetMessage.trim());
+    }
 
 
-	@Getter
-    @Inject
-	private FarmingTeleportOverlay farmingTeleportOverlay;
-	@Inject
-	private FarmingTeleportSceneOverlay farmingTeleportSceneOverlay;
+    public void clearLastMessage()
+    {
+        lastMessage = "";
+    }
 
-	private EasyFarmingPanel farmingHelperPanel;
-	public EasyFarmingPanel panel;
-	private NavigationButton navButton;
 
-	@Inject
-	private ClientToolbar clientToolbar;
+    public boolean areItemsCollected()
+    {
+        return itemsCollected;
+    }
 
-	@Inject
-	private EasyFarmingConfig config;
 
-	public EasyFarmingConfig getConfig() {
-		return config;
-	}
+    public void skipCurrentStep()
+    {
+        if (farmingTeleportOverlay == null
+                || !farmingTeleportOverlay.isCustomRunMode())
+        {
+            return;
+        }
 
-	/** Custom run tool inclusion: set when starting a custom run from the detail panel. */
-	private boolean customRunIncludeSecateurs = true;
-	private boolean customRunIncludeDibber = true;
-	private boolean customRunIncludeRake = true;
+        clearLastMessage();
+        farmingTeleportOverlay.skipCurrentStep();
+    }
 
-	public void setCustomRunToolInclusion(boolean secateurs, boolean dibber, boolean rake) {
-		this.customRunIncludeSecateurs = secateurs;
-		this.customRunIncludeDibber = dibber;
-		this.customRunIncludeRake = rake;
-	}
 
-	public boolean getCustomRunIncludeSecateurs() { return customRunIncludeSecateurs; }
-	public boolean getCustomRunIncludeDibber() { return customRunIncludeDibber; }
-	public boolean getCustomRunIncludeRake() { return customRunIncludeRake; }
+    public void completeItemGatheringPhase()
+    {
+        itemsCollected = true;
+        isTeleportOverlayActive = true;
 
-	@Inject
-	public OverlayManager overlayManager;
-	@Inject
-	public InfoBoxManager infoBoxManager;
+        if (farmingHelperOverlay != null)
+        {
+            farmingHelperOverlay.clearAllInfoBoxes();
+        }
+    }
 
-	@Getter
-    @Setter
-    private boolean isOverlayActive = true;
 
-	@Inject
-	private EasyFarmingOverlay farmingHelperOverlay;
+    /*
+     * Returns the seed item IDs that should currently be highlighted.
+     *
+     * IMPORTANT:
+     * This uses the SELECTED custom run, not the active/started run.
+     *
+     * Example:
+     *   Herb + Allotment run
+     *       -> configured herb seed
+     *       -> configured allotment seed
+     *
+     *   Hops-only run
+     *       -> configured hops seed
+     *
+     *   No selected run
+     *       -> nothing
+     */
+    public Set<Integer> getSelectedRunSeedIds()
+    {
+        Set<Integer> ids = new HashSet<>();
 
-	public EasyFarmingOverlay getEasyFarmingOverlay()
-	{
-		return farmingHelperOverlay;
-	}
+        CustomRun run = selectedCustomRun;
 
-	@Setter
-    private boolean itemsCollected = false;
-	public boolean areItemsCollected() {
-		return itemsCollected;
-	}
+        if (run == null)
+        {
+            return ids;
+        }
 
-	@Provides
-	EasyFarmingConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(EasyFarmingConfig.class);
-	}
-	
-	@Provides
-	com.easyfarming.overlays.utils.ColorProvider provideColorProvider(EasyFarmingConfig config)
-	{
-		return new com.easyfarming.overlays.utils.ColorProvider(config);
-	}
+        if (run.getLocations() == null)
+        {
+            return ids;
+        }
 
-	@Provides
-	EasyFarmingOverlay provideEasyFarmingOverlay(Client client, EasyFarmingPlugin plugin, ItemManager itemManager, InfoBoxManager infoBoxManager)
-	{
-		return new EasyFarmingOverlay(client, plugin, itemManager, infoBoxManager);
-	}
+        for (RunLocation location : run.getLocations())
+        {
+            if (location == null || location.getPatchTypes() == null)
+            {
+                continue;
+            }
 
-    public void addTextToInfoBox(String text) {
-		farmingHelperOverlayInfoBox.setText(text);
-	}
+            for (String patchType : location.getPatchTypes())
+            {
+                if ("HERB".equalsIgnoreCase(patchType))
+                {
+                    addSeedId(ids, config.herbSeed().getItemId());
+                }
+                else if ("ALLOTMENT".equalsIgnoreCase(patchType))
+                {
+                    addSeedId(ids, config.allotmentSeed().getItemId());
+                }
+                else if ("FLOWER".equalsIgnoreCase(patchType))
+                {
+                    addSeedId(ids, config.flowerSeed().getItemId());
+                }
+                else if ("HOPS".equalsIgnoreCase(patchType))
+                {
+                    addSeedId(ids, config.hopsSeed().getItemId());
+                }
+            }
+        }
 
-    public void addDebugTextToInfoBox(String debugText) {
-		farmingHelperOverlayInfoBox.setDebugText(debugText);
-	}
+        return ids;
+    }
 
-	@Override
-	protected void startUp()
-	{
-		farmingHelperOverlay = new EasyFarmingOverlay(client, this, itemManager, infoBoxManager);
 
-		panel = new EasyFarmingPanel(this, overlayManager, farmingTeleportOverlay, itemManager);
-		final BufferedImage icon = ImageUtil.loadImageResource(getClass(), "/icon.png");
+    private void addSeedId(Set<Integer> ids, int itemId)
+    {
+        if (itemId > 0)
+        {
+            ids.add(itemId);
+        }
+    }
 
-		navButton = NavigationButton.builder()
-				.tooltip("Easy Farming")
-				.icon(icon)
-				.priority(6)
-				.panel(panel)
-				.build();
-		clientToolbar.addNavigation(navButton);
 
-		overlayManager.add(farmingHelperOverlay);
-		overlayManager.add(farmingTeleportSceneOverlay);
-		overlayManager.add(farmingTeleportOverlay);
-		overlayManager.add(farmingHelperOverlayInfoBox);
+    public void setCustomRunToolInclusion(
+            boolean secateurs,
+            boolean dibber,
+            boolean rake)
+    {
+        customRunIncludeSecateurs = secateurs;
+        customRunIncludeDibber = dibber;
+        customRunIncludeRake = rake;
+    }
 
-		// set overlay to inactive
-		isOverlayActive = false;
-		eventBus.register(this);
-	}
 
-	@Override
-	protected void shutDown()
-	{
-		if (navButton != null) {
-			clientToolbar.removeNavigation(navButton);
-		}
+    public boolean getCustomRunIncludeSecateurs()
+    {
+        return customRunIncludeSecateurs;
+    }
 
-		overlayManager.remove(farmingHelperOverlay);
-		overlayManager.remove(farmingTeleportSceneOverlay);
-		overlayManager.remove(farmingTeleportOverlay);
-		overlayManager.remove(farmingHelperOverlayInfoBox);
 
-		eventBus.unregister(this);
-	}
+    public boolean getCustomRunIncludeDibber()
+    {
+        return customRunIncludeDibber;
+    }
+
+
+    public boolean getCustomRunIncludeRake()
+    {
+        return customRunIncludeRake;
+    }
+
+
+    public void addTextToInfoBox(String text)
+    {
+        farmingHelperOverlayInfoBox.setText(text);
+    }
+
+
+    public void addDebugTextToInfoBox(String debugText)
+    {
+        farmingHelperOverlayInfoBox.setDebugText(debugText);
+    }
+
+
+    @Provides
+    EasyFarmingConfig getConfig(ConfigManager configManager)
+    {
+        return configManager.getConfig(EasyFarmingConfig.class);
+    }
+
+
+    @Provides
+    com.easyfarming.overlays.utils.ColorProvider provideColorProvider(
+            EasyFarmingConfig config)
+    {
+        return new com.easyfarming.overlays.utils.ColorProvider(config);
+    }
+
+
+    @Provides
+    EasyFarmingOverlay provideEasyFarmingOverlay(
+            Client client,
+            EasyFarmingPlugin plugin,
+            ItemManager itemManager,
+            InfoBoxManager infoBoxManager)
+    {
+        return new EasyFarmingOverlay(
+                client,
+                plugin,
+                itemManager,
+                infoBoxManager);
+    }
+
+
+    @Override
+    protected void startUp()
+    {
+        selectedCustomRun = null;
+
+        farmingHelperOverlay =
+                new EasyFarmingOverlay(
+                        client,
+                        this,
+                        itemManager,
+                        infoBoxManager);
+
+        panel = new EasyFarmingPanel(
+                this,
+                overlayManager,
+                farmingTeleportOverlay,
+                itemManager);
+
+        final BufferedImage icon =
+                ImageUtil.loadImageResource(getClass(), "/icon.png");
+
+        navButton = NavigationButton.builder()
+                .tooltip("Better Farming")
+                .icon(icon)
+                .priority(6)
+                .panel(panel)
+                .build();
+
+        clientToolbar.addNavigation(navButton);
+
+        overlayManager.add(farmingHelperOverlay);
+        overlayManager.add(farmingTeleportSceneOverlay);
+        overlayManager.add(farmingTeleportOverlay);
+        overlayManager.add(farmingHelperOverlayInfoBox);
+        overlayManager.add(seedHighlightOverlay);
+
+        isOverlayActive = false;
+
+        eventBus.register(this);
+    }
+
+
+    @Override
+    protected void shutDown()
+    {
+        selectedCustomRun = null;
+
+        if (navButton != null)
+        {
+            clientToolbar.removeNavigation(navButton);
+        }
+
+        overlayManager.remove(farmingHelperOverlay);
+        overlayManager.remove(farmingTeleportSceneOverlay);
+        overlayManager.remove(farmingTeleportOverlay);
+        overlayManager.remove(farmingHelperOverlayInfoBox);
+        overlayManager.remove(seedHighlightOverlay);
+
+        eventBus.unregister(this);
+    }
 }

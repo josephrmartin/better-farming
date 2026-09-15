@@ -38,10 +38,15 @@ public class EasyFarmingOverlay extends Overlay {
     // Track current InfoBoxes by item ID
     private final Map<Integer, RequiredItemInfoBox> currentInfoBoxes = new HashMap<>();
 
-    public static final List<Integer> TELEPORT_CRYSTAL_IDS = Arrays.asList(ItemID.MOURNING_TELEPORT_CRYSTAL_1,
-            ItemID.MOURNING_TELEPORT_CRYSTAL_2, ItemID.MOURNING_TELEPORT_CRYSTAL_3, ItemID.MOURNING_TELEPORT_CRYSTAL_4,
-            ItemID.MOURNING_TELEPORT_CRYSTAL_5, ItemID.PRIF_TELEPORT_CRYSTAL);
-    private static final int BASE_TELEPORT_CRYSTAL_ID = ItemID.MOURNING_TELEPORT_CRYSTAL_1;
+    public static final List<Integer> TELEPORT_CRYSTAL_IDS = Arrays.asList(
+        ItemID.MOURNING_TELEPORT_CRYSTAL_1,
+        ItemID.MOURNING_TELEPORT_CRYSTAL_2,
+        ItemID.MOURNING_TELEPORT_CRYSTAL_3,
+        ItemID.MOURNING_TELEPORT_CRYSTAL_4,
+        ItemID.MOURNING_TELEPORT_CRYSTAL_5,
+        ItemID.PRIF_TELEPORT_CRYSTAL
+    );
+    private static final int BASE_TELEPORT_CRYSTAL_ID = ItemID.PRIF_TELEPORT_CRYSTAL;
 
     public List<Integer> getTeleportCrystalIds() {
         return TELEPORT_CRYSTAL_IDS;
@@ -51,9 +56,14 @@ public class EasyFarmingOverlay extends Overlay {
         return TELEPORT_CRYSTAL_IDS.contains(itemId);
     }
 
-    public static final List<Integer> SKILLS_NECKLACE_IDS = Arrays.asList(ItemID.JEWL_NECKLACE_OF_SKILLS_1,
-            ItemID.JEWL_NECKLACE_OF_SKILLS_2, ItemID.JEWL_NECKLACE_OF_SKILLS_3, ItemID.JEWL_NECKLACE_OF_SKILLS_4,
-            ItemID.JEWL_NECKLACE_OF_SKILLS_5, ItemID.JEWL_NECKLACE_OF_SKILLS_6);
+    public static final List<Integer> SKILLS_NECKLACE_IDS = Arrays.asList(
+        ItemID.JEWL_NECKLACE_OF_SKILLS_1,
+        ItemID.JEWL_NECKLACE_OF_SKILLS_2,
+        ItemID.JEWL_NECKLACE_OF_SKILLS_3,
+        ItemID.JEWL_NECKLACE_OF_SKILLS_4,
+        ItemID.JEWL_NECKLACE_OF_SKILLS_5,
+        ItemID.JEWL_NECKLACE_OF_SKILLS_6
+    );
 
     public static final List<Integer> NECKLACE_OF_PASSAGE_IDS = Constants.NECKLACE_OF_PASSAGE_IDS;
 
@@ -81,8 +91,11 @@ public class EasyFarmingOverlay extends Overlay {
         return Constants.isNecklaceOfPassage(itemId);
     }
 
-    public static final List<Integer> EXPLORERS_RING_IDS = Arrays.asList(ItemID.LUMBRIDGE_RING_MEDIUM,
-            ItemID.LUMBRIDGE_RING_HARD, ItemID.LUMBRIDGE_RING_ELITE);
+    public static final List<Integer> EXPLORERS_RING_IDS = Arrays.asList(
+        ItemID.LUMBRIDGE_RING_MEDIUM,
+        ItemID.LUMBRIDGE_RING_HARD,
+        ItemID.LUMBRIDGE_RING_ELITE
+    );
     private static final int BASE_EXPLORERS_RING_ID = ItemID.LUMBRIDGE_RING_MEDIUM;
 
     public List<Integer> getExplorersRingIds() {
@@ -93,8 +106,11 @@ public class EasyFarmingOverlay extends Overlay {
         return EXPLORERS_RING_IDS.contains(itemId);
     }
 
-    public static final List<Integer> ARDY_CLOAK_IDS = Arrays.asList(ItemID.ARDY_CAPE_MEDIUM, ItemID.ARDY_CAPE_HARD,
-            ItemID.ARDY_CAPE_ELITE);
+    public static final List<Integer> ARDY_CLOAK_IDS = Arrays.asList(
+        ItemID.ARDY_CAPE_MEDIUM,
+        ItemID.ARDY_CAPE_HARD,
+        ItemID.ARDY_CAPE_ELITE
+    );
     private static final int BASE_ARDY_CLOAK_ID = ItemID.ARDY_CAPE_MEDIUM;
 
     public List<Integer> getArdyCloakIds() {
@@ -105,8 +121,10 @@ public class EasyFarmingOverlay extends Overlay {
         return ARDY_CLOAK_IDS.contains(itemId);
     }
 
-    public static final List<Integer> FARMING_CAPE_IDS = Arrays.asList(ItemID.SKILLCAPE_FARMING,
-            ItemID.SKILLCAPE_FARMING_TRIMMED);
+    public static final List<Integer> FARMING_CAPE_IDS = Arrays.asList(
+        ItemID.SKILLCAPE_FARMING,
+        ItemID.SKILLCAPE_FARMING_TRIMMED
+    );
     private static final int BASE_FARMING_CAPE_ID = ItemID.SKILLCAPE_FARMING;
 
     public List<Integer> getFarmingCapeIds() {
@@ -144,12 +162,24 @@ public class EasyFarmingOverlay extends Overlay {
     }
 
     private static final List<Integer> HERB_SEED_IDS = Arrays.asList(
-            ItemID.GUAM_SEED, ItemID.MARRENTILL_SEED, ItemID.TARROMIN_SEED, ItemID.HARRALANDER_SEED,
-            ItemID.RANARR_SEED, ItemID.TOADFLAX_SEED, ItemID.IRIT_SEED, ItemID.AVANTOE_SEED,
-            ItemID.KWUARM_SEED, ItemID.SNAPDRAGON_SEED, ItemID.CADANTINE_SEED, ItemID.LANTADYME_SEED,
-            ItemID.DWARF_WEED_SEED, ItemID.TORSTOL_SEED, ItemID.HUASCA_SEED);
-    private static final int BASE_SEED_ID = ItemID.GUAM_SEED;
-    private static final int BASE_HOPS_SEED_ID = ItemID.BARLEY_SEED;
+            ItemID.AVANTOE_SEED,
+            ItemID.CADANTINE_SEED,
+            ItemID.DWARF_WEED_SEED,
+            ItemID.GUAM_SEED,
+            ItemID.HARRALANDER_SEED,
+            ItemID.HUASCA_SEED,
+            ItemID.IRIT_SEED,
+            ItemID.KWUARM_SEED,
+            ItemID.LANTADYME_SEED,
+            ItemID.MARRENTILL_SEED,
+            ItemID.RANARR_SEED,
+            ItemID.SNAPDRAGON_SEED,
+            ItemID.TARROMIN_SEED,
+            ItemID.TOADFLAX_SEED,
+            ItemID.TORSTOL_SEED
+        );
+    private static final int BASE_SEED_ID = ItemID.TOADFLAX_SEED;
+    private static final int BASE_HOPS_SEED_ID = ItemID.HEMP_SEED;
 
     public List<Integer> getHerbSeedIds() {
         return HERB_SEED_IDS;
@@ -242,9 +272,17 @@ public class EasyFarmingOverlay extends Overlay {
     }
 
     private static final List<Integer> ALLOTMENT_SEED_IDS = Arrays.asList(
-            ItemID.POTATO_SEED, ItemID.ONION_SEED, ItemID.CABBAGE_SEED, ItemID.TOMATO_SEED,
-            ItemID.SWEETCORN_SEED, ItemID.STRAWBERRY_SEED, ItemID.WATERMELON_SEED, ItemID.SNAPE_GRASS_SEED);
-    private static final int BASE_ALLOTMENT_SEED_ID = ItemID.SNAPE_GRASS_SEED;
+        ItemID.CABBAGE_SEED,
+        ItemID.ONION_SEED,
+        ItemID.POTATO_SEED,
+        ItemID.SNAPE_GRASS_SEED,
+        ItemID.STRAWBERRY_SEED,
+        ItemID.SWEETCORN_SEED,
+        ItemID.TOMATO_SEED,
+        ItemID.WATERMELON_SEED
+    );
+           
+    private static final int BASE_ALLOTMENT_SEED_ID = ItemID.STRAWBERRY_SEED;
 
     public List<Integer> getAllotmentSeedIds() {
         return Constants.ALLOTMENT_SEED_IDS;
@@ -258,10 +296,14 @@ public class EasyFarmingOverlay extends Overlay {
         return Constants.TREE_PATCH_IDS;
     }
 
-    private static final List<Integer> TREE_SAPLING_IDS = Arrays.asList(ItemID.PLANTPOT_OAK_SAPLING,
-            ItemID.PLANTPOT_WILLOW_SAPLING, ItemID.PLANTPOT_MAPLE_SAPLING, ItemID.PLANTPOT_YEW_SAPLING,
-            ItemID.PLANTPOT_MAGIC_TREE_SAPLING);
-    private static final int BASE_SAPLING_ID = ItemID.PLANTPOT_OAK_SAPLING;
+    private static final List<Integer> TREE_SAPLING_IDS = Arrays.asList(
+        ItemID.PLANTPOT_MAGIC_TREE_SAPLING,
+        ItemID.PLANTPOT_MAPLE_SAPLING,
+        ItemID.PLANTPOT_OAK_SAPLING,
+        ItemID.PLANTPOT_WILLOW_SAPLING,
+        ItemID.PLANTPOT_YEW_SAPLING
+    );
+    private static final int BASE_SAPLING_ID = ItemID.PLANTPOT_MAPLE_SAPLING;
 
     public List<Integer> getTreeSaplingIds() {
         return TREE_SAPLING_IDS;
@@ -275,11 +317,17 @@ public class EasyFarmingOverlay extends Overlay {
         return Constants.FRUIT_TREE_PATCH_IDS;
     }
 
-    private static final List<Integer> FRUIT_TREE_SAPLING_IDS = Arrays.asList(ItemID.PLANTPOT_APPLE_SAPLING,
-            ItemID.PLANTPOT_BANANA_SAPLING, ItemID.PLANTPOT_ORANGE_SAPLING, ItemID.PLANTPOT_CURRY_SAPLING,
-            ItemID.PLANTPOT_PINEAPPLE_SAPLING, ItemID.PLANTPOT_PAPAYA_SAPLING, ItemID.PLANTPOT_PALM_SAPLING,
-            ItemID.PLANTPOT_DRAGONFRUIT_SAPLING);
-    private static final int BASE_FRUIT_SAPLING_ID = ItemID.PLANTPOT_APPLE_SAPLING;
+    private static final List<Integer> FRUIT_TREE_SAPLING_IDS = Arrays.asList(
+        ItemID.PLANTPOT_APPLE_SAPLING,
+        ItemID.PLANTPOT_BANANA_SAPLING,
+        ItemID.PLANTPOT_CURRY_SAPLING,
+        ItemID.PLANTPOT_DRAGONFRUIT_SAPLING,
+        ItemID.PLANTPOT_ORANGE_SAPLING,
+        ItemID.PLANTPOT_PALM_SAPLING,
+        ItemID.PLANTPOT_PAPAYA_SAPLING,
+        ItemID.PLANTPOT_PINEAPPLE_SAPLING
+    );
+    private static final int BASE_FRUIT_SAPLING_ID = ItemID.PLANTPOT_PALM_SAPLING;
 
     public List<Integer> getFruitTreeSaplingIds() {
         return FRUIT_TREE_SAPLING_IDS;
@@ -290,14 +338,25 @@ public class EasyFarmingOverlay extends Overlay {
     }
 
     public static final List<Integer> RUNE_POUCH_ID = Arrays.asList(
-            ItemID.BH_RUNE_POUCH, ItemID.BH_RUNE_POUCH_TROUVER,
-            ItemID.DIVINE_RUNE_POUCH, ItemID.DIVINE_RUNE_POUCH_TROUVER);
+        ItemID.BH_RUNE_POUCH,
+        ItemID.BH_RUNE_POUCH_TROUVER,
+        ItemID.DIVINE_RUNE_POUCH, 
+        ItemID.DIVINE_RUNE_POUCH_TROUVER
+    );
 
-    public static final List<Integer> RUNE_POUCH_AMOUNT_VARBITS = Arrays.asList(VarbitID.RUNE_POUCH_QUANTITY_1,
-            VarbitID.RUNE_POUCH_QUANTITY_2, VarbitID.RUNE_POUCH_QUANTITY_3, VarbitID.RUNE_POUCH_QUANTITY_4);
+    public static final List<Integer> RUNE_POUCH_AMOUNT_VARBITS = Arrays.asList(
+        VarbitID.RUNE_POUCH_QUANTITY_1,
+        VarbitID.RUNE_POUCH_QUANTITY_2,
+        VarbitID.RUNE_POUCH_QUANTITY_3,
+        VarbitID.RUNE_POUCH_QUANTITY_4
+    );
 
-    public static final List<Integer> RUNE_POUCH_RUNE_VARBITS = Arrays.asList(VarbitID.RUNE_POUCH_TYPE_1,
-            VarbitID.RUNE_POUCH_TYPE_2, VarbitID.RUNE_POUCH_TYPE_3, VarbitID.RUNE_POUCH_TYPE_4);
+    public static final List<Integer> RUNE_POUCH_RUNE_VARBITS = Arrays.asList(
+        VarbitID.RUNE_POUCH_TYPE_1,
+        VarbitID.RUNE_POUCH_TYPE_2,
+        VarbitID.RUNE_POUCH_TYPE_3,
+        VarbitID.RUNE_POUCH_TYPE_4
+    );
 
     public static final List<Integer> SEED_BOX_IDS = Constants.SEED_BOX_IDS;
 
